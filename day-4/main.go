@@ -50,8 +50,6 @@ func main() {
 		inp = append(inp, v)
 	}
 	inpChars := []rune(inp[0])
-	inpCharsCopy := make([]rune, len(inpChars), len(inpChars))
-	copy(inpCharsCopy, inpChars)
-	fmt.Println("1: ", partOne(inpChars))
-	fmt.Println("2: ", partTwo(inpCharsCopy))
+	// fmt.Println("1: ", partOne(inpChars))
+	fmt.Println("2: ", partTwo(inpChars))
 }

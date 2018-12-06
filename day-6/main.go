@@ -73,8 +73,8 @@ func isInfinite(x int, y int, canvas *[][]field, areaMap *map[int]*area) bool {
 	xMax := len(*canvas)
 	yMax := len((*canvas)[0])
 	for i := -1; i <= 1; i++ {
-		for j := -1; i <= 1; i++ {
-			if x+i >= xMax || x-i < 0 || y+j >= yMax || y+j < 0 {
+		for j := -1; j <= 1; j++ {
+			if x+i >= xMax || x+i < 0 || y+j >= yMax || y+j < 0 {
 				return true
 			}
 		}
@@ -118,7 +118,7 @@ func partOne(points []point) int {
 	}
 	biggestArea := 0
 	for k := range areaMap {
-		if !areaMap[k].infinite && areaMap[k].size > biggestArea {
+		if !areaMap[k].infinite && areaMap[k].size > biggestArea && k > 0 {
 			biggestArea = areaMap[k].size
 		}
 	}

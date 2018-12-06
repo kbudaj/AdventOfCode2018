@@ -12,9 +12,7 @@ func partOne(inp []rune) int {
 		if i < 0 {
 			i = 0
 		}
-		first := int(inp[i])
-		second := int(inp[i+1])
-		delta := first - second
+		delta := int(inp[i]) - int(inp[i+1])
 		if delta == 32 || delta == -32 {
 			inp = append(inp[:i], inp[i+2:]...)
 			inpLength -= 2

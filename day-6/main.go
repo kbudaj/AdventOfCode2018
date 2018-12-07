@@ -125,6 +125,26 @@ func partOne(points []point) int {
 	return biggestArea
 }
 
+func partTwo(points []point) int {
+	canvas := buildCanvas(points)
+	areaSize := 0
+	for x, row := range canvas {
+		for y := range row {
+			totalDistance := 0
+			for _, p := range points {
+				if totalDistance >= 10000 {
+					break
+				}
+				totalDistance += int(math.Abs(float64(x-p.x)) + math.Abs(float64(y-p.y)))
+			}
+			if totalDistance < 10000 {
+				areaSize++
+			}
+		}
+	}
+	return areaSize
+}
+
 func main() {
 	inp := make([]string, 0, 256)
 	s := bufio.NewScanner(os.Stdin)
@@ -134,5 +154,5 @@ func main() {
 	}
 	points := inputToPoints(inp)
 	fmt.Println("1: ", partOne(points))
-	// fmt.Println("2: ", partTwo(inpCharsCopy))
+	fmt.Println("2: ", partTwo(points))
 }

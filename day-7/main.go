@@ -62,22 +62,24 @@ func parseInput(inp []string) map[int]*step {
 	return stepMap
 }
 
-func partOne(inp []string) string {
-	stepMap := parseInput(inp)
-
-	// Map keys to ordered list
-	orderedStepIDs := make([]int, len(stepMap))
+func mapToOrderedKeys(m map[int]*step) []int {
+	keys := make([]int, len(m))
 	i := 0
-	for k := range stepMap {
-		orderedStepIDs[i] = k
+	for k := range m {
+		keys[i] = k
 		i++
 	}
-	sort.Ints(orderedStepIDs)
+	sort.Ints(keys)
+	return keys
+}
 
+func partOne(inp []string) []string {
+	stepMap := parseInput(inp)
+	orderedStepIDs := mapToOrderedKeys(stepMap)
 	desiredLength := len(orderedStepIDs)
 	finished := make([]string, 0, len(orderedStepIDs))
 
-	i = 0
+	i := 0
 	for len(finished) < desiredLength {
 		stepID := orderedStepIDs[i]
 		if !stepMap[stepID].isBlocked(&stepMap) {
@@ -89,7 +91,58 @@ func partOne(inp []string) string {
 			i++
 		}
 	}
-	return strings.Join(finished, "")
+	return finished
+}
+
+type worker struct {
+	timeLeft int
+	task     *step
+}
+
+func getAvailableStep(stepMap map[int]*step, orderedStepIDs *[]int) *step {
+	cycle := len(*orderedStepIDs)
+	for i := 0; i < cycle; i++ {
+		stepID := (*orderedStepIDs)[i]
+		if !stepMap[stepID].isBlocked(&stepMap) {
+			newOrdStepIDs := *orderedStepIDs
+			newOrdStepIDs = append(newOrdStepIDs[:i], newOrdStepIDs[i+1:]...)
+			*orderedStepIDs = newOrdStepIDs
+			return stepMap[stepID]
+		}
+	}
+	return nil
+}
+
+func partTwo(inp []string) int {
+	stepMap := parseInput(inp)
+	k := mapToOrderedKeys(stepMap)
+	orderedStepIDs := &k
+	w1, w2, w3, w4, w5 := worker{0, nil}, worker{0, nil}, worker{0, nil}, worker{0, nil}, worker{0, nil}
+	workers := []*worker{&w1, &w2, &w3, &w4, &w5}
+	var seconds int
+	for seconds = -1; len(*orderedStepIDs) > 0; seconds++ {
+		for _, w := range workers {
+			if w.timeLeft > 0 {
+				w.timeLeft--
+			}
+			if w.timeLeft == 0 {
+				if w.task != nil {
+					w.task.finished = true
+					w.task = nil
+				}
+				task := getAvailableStep(stepMap, orderedStepIDs)
+				if task != nil {
+					w.task = task
+					w.timeLeft = 60 + task.id - 64 // ASCII A 65-64=1
+				}
+			}
+		}
+	}
+	seconds--
+	for _, w := range workers {
+		seconds += w.timeLeft
+	}
+	return seconds
 }
 
 func main() {
@@ -99,6 +152,6 @@ func main() {
 		v := s.Text()
 		inp = append(inp, v)
 	}
-	fmt.Println("1: ", partOne(inp))
-	// fmt.Println("2: ", partTwo(points))
+	fmt.Println("1: ", strings.Join(partOne(inp), ""))
+	fmt.Println("2: ", partTwo(inp))
 }
